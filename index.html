@@ -1,0 +1,267 @@
+ 
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实时时钟</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            color: #e6e6e6;
+            letter-spacing: 2px;
+        }
+        
+        .time-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+        }
+        
+        .time-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px 20px;
+            margin: 0 15px;
+            min-width: 160px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .time-box:hover {
+            transform: translateY(-10px);
+            background: rgba(30, 60, 114, 0.5);
+        }
+        
+        .time-value {
+            font-size: 5rem;
+            font-weight: 700;
+            color: #4cc9f0;
+            text-shadow: 0 0 15px rgba(76, 201, 240, 0.7);
+        }
+        
+        .time-label {
+            font-size: 1.3rem;
+            margin-top: 10px;
+            color: #a1a1a1;
+            letter-spacing: 1px;
+        }
+        
+        .date-container {
+            margin: 30px 0;
+            font-size: 2.2rem;
+            color: #f8f9fa;
+            text-shadow: 0 0 10px rgba(248, 249, 250, 0.3);
+            letter-spacing: 2px;
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        
+        .info-title {
+            font-size: 1.5rem;
+            color: #f72585;
+            margin-bottom: 15px;
+        }
+        
+        .timezone-info {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            color: #e9c46a;
+        }
+        
+        .additional-info {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .additional-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px;
+            min-width: 180px;
+        }
+        
+        .additional-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #90be6d;
+        }
+        
+        .additional-label {
+            font-size: 1rem;
+            color: #ccc;
+            margin-top: 8px;
+        }
+        
+        .refresh-info {
+            margin-top: 20px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .separator {
+            font-size: 5rem;
+            color: rgba(255, 255, 255, 0.2);
+            margin: 0 5px;
+            transform: translateY(-10px);
+        }
+        
+        @media (max-width: 768px) {
+            .time-container {
+                flex-direction: column;
+            }
+            
+            .time-box {
+                margin: 15px 0;
+                min-width: 140px;
+            }
+            
+            .separator {
+                display: none;
+            }
+            
+            .additional-info {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>实时时钟</h1>
+        
+        <div class="time-container">
+            <div class="time-box">
+                <div class="time-value" id="hours">00</div>
+                <div class="time-label">小时</div>
+            </div>
+            
+            <div class="separator">:</div>
+            
+            <div class="time-box">
+                <div class="time-value" id="minutes">00</div>
+                <div class="time-label">分钟</div>
+            </div>
+            
+            <div class="separator">:</div>
+            
+            <div class="time-box">
+                <div class="time-value" id="seconds">00</div>
+                <div class="time-label">秒钟</div>
+            </div>
+        </div>
+        
+        <div class="date-container" id="date-display">2023年10月25日 星期三</div>
+        
+        <div class="info-box">
+            <div class="info-title">时间信息</div>
+            <div class="timezone-info" id="timezone-info">时区: 加载中...</div>
+            <div class="timezone-info" id="date-string">完整日期字符串: 加载中...</div>
+        </div>
+        
+        <div class="additional-info">
+            <div class="additional-box">
+                <div class="additional-value" id="milliseconds">000</div>
+                <div class="additional-label">毫秒</div>
+            </div>
+            
+            <div class="additional-box">
+                <div class="additional-value" id="day-of-year">295</div>
+                <div class="additional-label">一年中的第几天</div>
+            </div>
+            
+            <div class="additional-box">
+                <div class="additional-value" id="week-number">42</div>
+                <div class="additional-label">周数</div>
+            </div>
+        </div>
+        
+        <div class="refresh-info">时间每秒自动更新 | 使用浏览器本地时间</div>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            
+            // 更新时间
+            document.getElementById('hours').textContent = now.getHours().toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('milliseconds').textContent = now.getMilliseconds().toString().padStart(3, '0');
+            
+            // 更新日期
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+            
+            const weekday = weekdays[now.getDay()];
+            const month = months[now.getMonth()];
+            const dateString = `${now.getFullYear()}年${month}${now.getDate()}日 ${weekday}`;
+            document.getElementById('date-display').textContent = dateString;
+            
+            // 更新其他信息
+            document.getElementById('date-string').textContent = `完整日期: ${now.toString()}`;
+            document.getElementById('timezone-info').textContent = `时区: UTC${now.getTimezoneOffset() / -60 > 0 ? '+' : ''}${now.getTimezoneOffset() / -60}`;
+            
+            // 计算一年中的第几天
+            const start = new Date(now.getFullYear(), 0, 0);
+            const diff = now - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            const dayOfYear = Math.floor(diff / oneDay);
+            document.getElementById('day-of-year').textContent = dayOfYear;
+            
+            // 计算周数
+            const firstDayOfYear = new Date(now.getFullYear(), 0, 1);
+            const pastDaysOfYear = (now - firstDayOfYear) / 86400000;
+            const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+            document.getElementById('week-number').textContent = weekNumber;
+        }
+        
+        // 初始更新
+        updateTime();
+        
+        // 每秒更新一次
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
+ 
